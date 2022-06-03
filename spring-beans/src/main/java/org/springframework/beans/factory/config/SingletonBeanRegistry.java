@@ -31,12 +31,13 @@ import org.springframework.lang.Nullable;
  * @see ConfigurableBeanFactory
  * @see org.springframework.beans.factory.support.DefaultSingletonBeanRegistry
  * @see org.springframework.beans.factory.support.AbstractBeanFactory
+ * 
+ * 定义对单例的注册及获取
  */
 public interface SingletonBeanRegistry {
 
 	/**
-	 * Register the given existing object as singleton in the bean registry,
-	 * under the given bean name.
+	 * 根据给定的bean名称，在注册表中将给定对象注册为单例bean
 	 * <p>The given instance is supposed to be fully initialized; the registry
 	 * will not perform any initialization callbacks (in particular, it won't
 	 * call InitializingBean's {@code afterPropertiesSet} method).
@@ -49,8 +50,8 @@ public interface SingletonBeanRegistry {
 	 * for runtime registration of singletons. As a consequence, a registry
 	 * implementation should synchronize singleton access; it will have to do
 	 * this anyway if it supports a BeanFactory's lazy initialization of singletons.
-	 * @param beanName the name of the bean
-	 * @param singletonObject the existing singleton object
+	 * @param beanName 给定的bean名称
+	 * @param singletonObject 给定对象
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 * @see org.springframework.beans.factory.DisposableBean#destroy
 	 * @see org.springframework.beans.factory.support.BeanDefinitionRegistry#registerBeanDefinition

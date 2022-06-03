@@ -116,6 +116,8 @@ import org.springframework.util.StringUtils;
  * @see #addBeanPostProcessor
  * @see #getBean
  * @see #resolveDependency
+ * 
+ * 整个bean加载的核心，spring加载bean的默认实现
  */
 @SuppressWarnings("serial")
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory

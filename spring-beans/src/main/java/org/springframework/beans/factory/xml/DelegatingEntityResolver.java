@@ -77,6 +77,13 @@ public class DelegatingEntityResolver implements EntityResolver {
 	}
 
 
+	/**
+	 * 默认通过url从网络中获取验证文件，用户体验不好
+	 * Spring将验证文件放在自己项目里，重写此方法
+	 * @param publicId The public identifier of the external entity
+	 *        being referenced, or null if none was supplied.
+	 * @param systemId 默认情况下一般是URL
+	 */
 	@Override
 	@Nullable
 	public InputSource resolveEntity(@Nullable String publicId, @Nullable String systemId)
@@ -84,9 +91,11 @@ public class DelegatingEntityResolver implements EntityResolver {
 
 		if (systemId != null) {
 			if (systemId.endsWith(DTD_SUFFIX)) {
+				//DTD 直接截取systemId最后的xx.dtd然后去当前路径下寻找
 				return this.dtdResolver.resolveEntity(publicId, systemId);
 			}
 			else if (systemId.endsWith(XSD_SUFFIX)) {
+				//默认到META-INF/Spring.schemas文件中找到systemId所对应的XSD文件并加载
 				return this.schemaResolver.resolveEntity(publicId, systemId);
 			}
 		}

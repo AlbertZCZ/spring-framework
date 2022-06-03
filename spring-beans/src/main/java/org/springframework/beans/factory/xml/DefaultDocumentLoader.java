@@ -69,11 +69,14 @@ public class DefaultDocumentLoader implements DocumentLoader {
 	public Document loadDocument(InputSource inputSource, EntityResolver entityResolver,
 			ErrorHandler errorHandler, int validationMode, boolean namespaceAware) throws Exception {
 
+		//创建DocumentBuilderFactory
 		DocumentBuilderFactory factory = createDocumentBuilderFactory(validationMode, namespaceAware);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Using JAXP provider [" + factory.getClass().getName() + "]");
 		}
+		//再通过DocumentBuilderFactory创建DocumentBuilder
 		DocumentBuilder builder = createDocumentBuilder(factory, entityResolver, errorHandler);
+		//进而解析inputSource来返回Document对象
 		return builder.parse(inputSource);
 	}
 

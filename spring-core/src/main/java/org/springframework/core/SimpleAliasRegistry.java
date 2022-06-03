@@ -40,6 +40,8 @@ import org.springframework.util.StringValueResolver;
  * @author Juergen Hoeller
  * @author Qimiao Chen
  * @since 2.5.2
+ * 
+ * 定义对alias的简单增删改等操作
  */
 public class SimpleAliasRegistry implements AliasRegistry {
 
