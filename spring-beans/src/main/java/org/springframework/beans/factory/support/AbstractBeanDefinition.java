@@ -42,6 +42,11 @@ import org.springframework.util.StringUtils;
  * Base class for concrete, full-fledged {@link BeanDefinition} classes,
  * factoring out common properties of {@link GenericBeanDefinition},
  * {@link RootBeanDefinition}, and {@link ChildBeanDefinition}.
+ * 
+ * 在配置文件中可以定义父<bean>和子<bean>，父<bean>用{@link RootBeanDefinition}表示，
+ * 而子<bean>用{@link ChildBeanDefinition}表示，而没有父<bean>的<bean>就使用{@link RootBeanDefinition}表示。
+ * AbstractBeanDefinition对两者共同的类信息进行抽象
+ * {@link GenericBeanDefinition}是自2.5版本以后新加入的bean文件配置属性定义类，是一站式服务类
  *
  * <p>The autowire constants match the ones defined in the
  * {@link org.springframework.beans.factory.config.AutowireCapableBeanFactory}
@@ -141,37 +146,83 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	@Nullable
 	private volatile Object beanClass;
 
+	/**
+	 * bean的作用范围，对应bean属性的scope
+	 */
 	@Nullable
 	private String scope = SCOPE_DEFAULT;
 
+	/**
+	 * 是否抽象，对应属性abstract
+	 */
 	private boolean abstractFlag = false;
 
+	/**
+	 * 是否懒加载，对应属性lazy-init
+	 */
 	@Nullable
 	private Boolean lazyInit;
 
+	/**
+	 * 自动注入模式，对应属性autowire
+	 */
 	private int autowireMode = AUTOWIRE_NO;
 
+	/**
+	 * 依赖检查，3.0后弃用这个属性
+	 */
 	private int dependencyCheck = DEPENDENCY_CHECK_NONE;
 
+	/**
+	 * 表示一个bean的实例化依赖另一个bean的先实例化，对应属性depend-on
+	 */
 	@Nullable
 	private String[] dependsOn;
 
+	/**
+	 * 设置为false，这样容器在查找自动装配对象时将不考虑该bean，即它不作为其它bean自动装配的候选者，但是该bean还是可以使用自动装配来注入其它bean的，对应属性autowire-candidate
+	 */
 	private boolean autowireCandidate = true;
 
+	/**
+	 * 是否首选者，对应属性primary
+	 */
 	private boolean primary = false;
 
+	/**
+	 * 用于记录qualifier，对应子元素qualifier
+	 */
 	private final Map<String, AutowireCandidateQualifier> qualifiers = new LinkedHashMap<>();
 
 	@Nullable
 	private Supplier<?> instanceSupplier;
 
+	/**
+	 * 允许访问非公开的构造器和方法，程序设置
+	 */
 	private boolean nonPublicAccessAllowed = true;
 
+	/**
+	 * 是否以宽松模式解析构造器函数
+	 * 如设置为false，则如下情况会抛异常
+	 * interface iTest {}
+	 * class ITestImpl implements iTest {}
+	 * class Main {
+	 *    Main(iTest i){}
+	 *    Main(ITestImpl i){}
+	 * }
+	 */
 	private boolean lenientConstructorResolution = true;
 
+	/**
+	 * 对应属性factory-bean
+	 */
 	@Nullable
 	private String factoryBeanName;
 
+	/**
+	 * 对应属性factory-method
+	 */
 	@Nullable
 	private String factoryMethodName;
 
@@ -183,9 +234,15 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	private MethodOverrides methodOverrides = new MethodOverrides();
 
+	/**
+	 * 初始化方法，对应属性init-method
+	 */
 	@Nullable
 	private String initMethodName;
 
+	/**
+	 * 销毁方法
+	 */
 	@Nullable
 	private String destroyMethodName;
 
@@ -193,13 +250,22 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	private boolean enforceDestroyMethod = true;
 
+	/**
+	 * 是否用户定义而不是程序本身定义的，aop是为true
+	 */
 	private boolean synthetic = false;
 
 	private int role = BeanDefinition.ROLE_APPLICATION;
 
+	/**
+	 * bean的描述信息
+	 */
 	@Nullable
 	private String description;
 
+	/**
+	 * 这个bean定义的资源
+	 */
 	@Nullable
 	private Resource resource;
 
