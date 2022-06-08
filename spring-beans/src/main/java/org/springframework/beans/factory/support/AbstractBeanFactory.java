@@ -346,10 +346,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 
 				// 实例化依赖的bean后便可以实例化mbd本身了
-				// singleton模式的创建
 				if (mbd.isSingleton()) {
+					// singleton模式的创建
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
+							//返回 singletonFactory
 							return createBean(beanName, mbd, args);
 						}
 						catch (BeansException ex) {
@@ -1854,8 +1855,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
-	 * Get the object for the given bean instance, either the bean
-	 * instance itself or its created object in case of a FactoryBean.
+	 * 1。对FactoryBean正确性的验证
+	 * 2。对非FactoryBean不做任务处理
+	 * 3。对bean进行转换
+	 * 4。将从Factory中解析bean的工作委托给 getObjectFromFactoryBean
 	 * @param beanInstance the shared bean instance
 	 * @param name the name that may include factory dereference prefix
 	 * @param beanName the canonical bean name
@@ -1870,6 +1873,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
 			}
+			//如果指定的name是工厂相关且beanInstance又不是FactoryBean类型则验证不通过
 			if (!(beanInstance instanceof FactoryBean)) {
 				throw new BeanIsNotAFactoryException(beanName, beanInstance.getClass());
 			}
@@ -1882,22 +1886,29 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
+		//此时我们已经有了bean实例，这个实例可能是正常的bean或者是工厂bean
+		//如果是工厂bean，我们使用它创建实例，如果用户想要直接获取工厂实例而不是工厂的getObject方法对应的实例那么传入的name应该加入前缀
 		if (!(beanInstance instanceof FactoryBean)) {
 			return beanInstance;
 		}
 
+		//加载factoryBean
 		Object object = null;
 		if (mbd != null) {
 			mbd.isFactoryBean = true;
 		}
 		else {
+			//尝试从缓存中加载bean
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {
 			// Return bean instance from factory.
+			//这里已经明确知道beanInstance一定是FactoryBean类型
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
 			// Caches object obtained from FactoryBean if it is a singleton.
+			//containsBeanDefinition检测beanDefinitionMap中也就是在所有已经加载的类中检测是否定义beanName
 			if (mbd == null && containsBeanDefinition(beanName)) {
+				//将存储XML配置文件的GernericBeanDefinition转换为RootBeanDefinition，如果指定BeanName是子bean的话同时会合并父类的相关属性
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
 			boolean synthetic = (mbd != null && mbd.isSynthetic());

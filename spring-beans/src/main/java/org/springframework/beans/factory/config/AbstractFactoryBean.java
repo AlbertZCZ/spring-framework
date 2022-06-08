@@ -146,7 +146,7 @@ public abstract class AbstractFactoryBean<T>
 
 
 	/**
-	 * Expose the singleton instance or create a new prototype instance.
+	 * 返回由FactoryBean创建的bean实例，如果isSingleton()返回true，则该实例会放到Spring容器中单实例缓存池中
 	 * @see #createInstance()
 	 * @see #getEarlySingletonInterfaces()
 	 */
